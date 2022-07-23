@@ -3,16 +3,23 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { Link, useHistory } from 'react-router-dom';
 import { useUserContext } from '../../context/user.context';
+import { useWeb3React } from '@web3-react/core';
+import { InjectedConnector } from '@web3-react/injected-connector';
+
 const navigation = [
 	{ name: 'Report', href: '/report', current: false },
-	{ name: 'Expenses', href: '/expenses', current: false },
+	{ name: 'Election', href: '/election', current: false },
+	{ name: 'Register As Candidate', href: '/register-as-cantidate', current: false },
+	{ name: 'Register Voter', href: '/register-voter', current: false },
 ];
 
 function classNames(...classes) {
 	return classes.filter(Boolean).join(' ');
 }
 
-export default function Example() {
+export default function Header() {
+	const { active, account, activate, chainId, library, deactivate } = useWeb3React();
+	console.log('NETWORK:', chainId);
 	const history = useHistory();
 	const [location, setLocation] = useState('');
 	const {
@@ -20,21 +27,34 @@ export default function Example() {
 		setCurrentUser,
 	} = useUserContext();
 	let filteredNavigation = navigation.filter((nav) => {
-		if (nav.name !== 'Dashboard') return nav;
-		if (nav.name === 'Dashboard' && currentUser && !isAdmin) return nav;
+		if (nav.name !== 'Register Voter' && nav.name !== 'Register As Candidate') return nav;
+		if (nav.name === 'Register Voter' && currentUser && isAdmin) return nav;
+		if (nav.name === 'Register As Candidate' && currentUser && !isAdmin) return nav;
 	});
+	console.log(isAdmin, currentUser);
 	useEffect(() => {
-		console.log(
-			history.listen((location) => {
-				setLocation(location.pathname);
-			})
-		);
+		history.listen((location) => {
+			setLocation(location.pathname);
+		});
 	}, [history]);
+
+	useEffect(() => {
+		if (account) {
+			setCurrentUser({ currentUser: account, isAdmin: account === '0x588f21831dabb99C4f3E2DFe5C720B9d4c566b69' ? true : false });
+			//			localStorage.setItem('currentUser', JSON.stringify(account));
+		} else {
+			setCurrentUser(null);
+		}
+	}, [account]);
 
 	const handleLogOut = () => {
 		setCurrentUser(null);
-		localStorage.clear();
-		history.push('/login');
+		deactivate();
+		history.push('/');
+	};
+
+	const handleConnect = async () => {
+		activate(new InjectedConnector({}));
 	};
 
 	return (
@@ -54,7 +74,7 @@ export default function Example() {
 							<div className='flex-1 flex items-center justify-center md:justify-between sm:items-stretch '>
 								<Link to='/'>
 									<div className='flex items-center justify-start mr-10 md:mr-0'>
-										<p className='text-xl font-light sm:text-2xl'>COSTLIVING</p>
+										<p className='text-xl font-light sm:text-2xl'>STATE ELECTIONS</p>
 									</div>
 								</Link>
 								<div className='hidden sm:block sm:ml-6 items-center justify-center'>
@@ -81,6 +101,16 @@ export default function Example() {
 													</div>
 													<Transition show={open} as={Fragment} enter='transition ease-out duration-100' enterFrom='transform opacity-0 scale-95' enterTo='transform opacity-100 scale-100' leave='transition ease-in duration-75' leaveFrom='transform opacity-100 scale-100' leaveTo='transform opacity-0 scale-95'>
 														<Menu.Items static className='origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none'>
+															<Menu.Item>
+																{({ active }) => (
+																	<Link to='/' onClick={handleLogOut} className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+																		<div>
+																			{' '}
+																			{account && account.substr(0, 8)}...{account && account.substr(-8, 8)}
+																		</div>
+																	</Link>
+																)}
+															</Menu.Item>
 															{isAdmin ? (
 																<Menu.Item>
 																	{({ active }) => (
@@ -119,16 +149,9 @@ export default function Example() {
 										</Menu>
 									) : (
 										<div className='flex justify-end items-center'>
-											<Link to='/login'>
-												<button type='submit' className={`mr-0  text-black px-1 py-2 sm:px-3 sm:py-3 sm:mr-3 rounded w-full  hover:underline focus:outline-none`}>
-													Login
-												</button>
-											</Link>
-											<Link to='/register'>
-												<button type='submit' className={` bg-black text-white px-1 py-2 sm:px-3 sm:py-3 rounded w-full  hover:bg-gray-800 focus:outline-none`}>
-													Register
-												</button>
-											</Link>
+											<button onClick={handleConnect} type='submit' className={` bg-black text-white px-1 py-2 sm:px-3 sm:py-3 rounded w-full  hover:bg-gray-800 focus:outline-none`}>
+												Connect
+											</button>
 										</div>
 									)}
 								</div>
