@@ -40,7 +40,7 @@ export default function Header() {
 
 	useEffect(() => {
 		if (account) {
-			setCurrentUser({ currentUser: account, isAdmin: account === '0x588f21831dabb99C4f3E2DFe5C720B9d4c566b69' ? true : false });
+			setCurrentUser({ currentUser: account, isAdmin: account === '0x588f21831dabb99C4f3E2DFe5C720B9d4c566b69' || account === '0x35197E0Dcb276f0AC5A2146F0718AF8671eDE9Ef' ? true : false });
 			//			localStorage.setItem('currentUser', JSON.stringify(account));
 		} else {
 			setCurrentUser(null);

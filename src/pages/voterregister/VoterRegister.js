@@ -4,25 +4,11 @@ import { useModalContext } from '../../context/modal.context';
 import WrapperCard from '../../components/wrappercard/WrapperCard.js';
 import { useWeb3React } from '@web3-react/core';
 import { formatEther } from '@ethersproject/units';
-import { Provider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
+import Voters from '../../contracts/Voters.json';
 
 // The ERC-20 Contract ABI, which is a common contract interface
 // for tokens (this is the Human-Readable ABI format)
-const daiAbi = [
-	// Some details about the token
-	'function name() view returns (string)',
-	'function symbol() view returns (string)',
-
-	// Get the account balance
-	'function balanceOf(address) view returns (uint)',
-
-	// Send some of your tokens to someone else
-	'function transfer(address to, uint amount)',
-
-	// An event triggered whenever anyone transfers to someone else
-	'event Transfer(address indexed from, address indexed to, uint amount)',
-];
 
 function useBalance() {
 	const { account, library } = useWeb3React();
@@ -39,9 +25,9 @@ function useBalance() {
 const VoterRegister = () => {
 	const voterAddressRef = useRef(null);
 
-	const [loading, setLoading] = useState('');
+	const [loading, setLoading] = useState(false);
 	const { setOpenModal } = useModalContext();
-	const { account, library } = useWeb3React();
+	const { account, library, chainId } = useWeb3React();
 	const balance = useBalance();
 
 	const handleSubmit = async (event) => {
@@ -50,25 +36,22 @@ const VoterRegister = () => {
 			setOpenModal('Please fill the form currectly');
 			return;
 		}
+
 		setLoading(true);
 		try {
 			const message = `Logging in at ${new Date().toISOString()}`;
 			const signer = await library.getSigner(account);
-			const daiContract = new Contract('dai.tokens.ethers.eth', daiAbi, signer);
+			console.log('ABI', Voters.abi);
+			const daiContract = new Contract('0x5DBf4A823bd1A995b30Be90b90Cbb84fdcB54beb', Voters.abi, signer);
+			const isDeployed = await daiContract.deployed();
+			console.log('IS DEPLOYED', isDeployed);
 
-			const name = await daiContract.name();
-			const symbol = await daiContract.symbol();
-
-			console.log(name);
-			console.log(symbol);
-			// const signature = await library
-			// 	.getSigner(account)
-			// 	.signMessage(message)
-			// 	.catch((error) => console.error(error));
-			//console.log({ message, account, signature });
+			const result = await daiContract.mint(voterAddressRef.current.value);
+			console.log('RESULT:', result);
 		} catch (error) {
 			console.log('ERROR:', error);
 		}
+		setLoading(false);
 	};
 
 	return (
