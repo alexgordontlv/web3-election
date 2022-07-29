@@ -6,14 +6,13 @@ import { Contract } from '@ethersproject/contracts';
 import { useWeb3React } from '@web3-react/core';
 import Voters from '../../contracts/Voters.json';
 
-const Report = () => {
+const VotersReport = () => {
 	const { account, library } = useWeb3React();
 
 	const [loading, setLoading] = useState(false);
 	const [voters, setVoters] = useState([]);
 
 	const currentUser = useGetCurrentUser();
-	console.log('USER ID', currentUser._id);
 
 	const getVoters = async () => {
 		try {
@@ -40,7 +39,6 @@ const Report = () => {
 	useEffect(() => {
 		getVoters();
 	}, []);
-	console.log(voters);
 	if (loading) return <Spinner />;
 	return (
 		<div className='flex justify-center mt-10'>
@@ -79,4 +77,4 @@ const Report = () => {
 	);
 };
 
-export default Report;
+export default VotersReport;

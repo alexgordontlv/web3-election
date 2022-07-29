@@ -9,7 +9,7 @@ import { InjectedConnector } from '@web3-react/injected-connector';
 const navigation = [
 	{ name: 'Report', href: '/report', current: false },
 	{ name: 'Election', href: '/election', current: false },
-	{ name: 'Register As Candidate', href: '/register-as-cantidate', current: false },
+	{ name: 'Register Candidate', href: '/register-cantidate', current: false },
 	{ name: 'Register Voter', href: '/register-voter', current: false },
 ];
 
@@ -27,9 +27,9 @@ export default function Header() {
 		setCurrentUser,
 	} = useUserContext();
 	let filteredNavigation = navigation.filter((nav) => {
-		if (nav.name !== 'Register Voter' && nav.name !== 'Register As Candidate') return nav;
+		if (nav.name !== 'Register Voter' && nav.name !== 'Register Candidate') return nav;
 		if (nav.name === 'Register Voter' && currentUser && isAdmin) return nav;
-		if (nav.name === 'Register As Candidate' && currentUser && !isAdmin) return nav;
+		if (nav.name === 'Register Candidate' && currentUser && isAdmin) return nav;
 	});
 	console.log(isAdmin, currentUser);
 	useEffect(() => {
@@ -111,30 +111,6 @@ export default function Header() {
 																	</Link>
 																)}
 															</Menu.Item>
-															{isAdmin ? (
-																<Menu.Item>
-																	{({ active }) => (
-																		<Link to='/admin-panel' className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
-																			Admin Panel
-																		</Link>
-																	)}
-																</Menu.Item>
-															) : (
-																<Menu.Item>
-																	{({ active }) => (
-																		<Link
-																			to={{
-																				pathname: '/profile',
-																				state: currentUser,
-																			}}
-																			className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-																		>
-																			{' '}
-																			Your Profile
-																		</Link>
-																	)}
-																</Menu.Item>
-															)}
 															<Menu.Item>
 																{({ active }) => (
 																	<Link to='/' onClick={handleLogOut} className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>

@@ -39,7 +39,7 @@ const CandidateRegister = () => {
 
 	return (
 		<WrapperCard>
-			<h2 className=' text-center text-3xl font-extrabold text-gray-900 mb-10'>Register As Candidate</h2>
+			<h2 className=' text-center text-3xl font-extrabold text-gray-900 mb-10'>Register Candidate</h2>
 			<form className='w-full max-w-lg' onSubmit={handleSubmit}>
 				<div className='flex flex-wrap -mx-3 mb-6'>
 					<div className='w-full md:w-1/2 px-3 mb-6 md:mb-0'>
