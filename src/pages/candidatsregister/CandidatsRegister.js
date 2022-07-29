@@ -1,39 +1,41 @@
 import React, { useState, useRef } from 'react';
-import axios from '../../utilities/axios/axios';
-import { useHistory } from 'react-router-dom';
 import { useModalContext } from '../../context/modal.context';
-import { useUserContext } from '../../context/user.context';
 import WrapperCard from '../../components/wrappercard/WrapperCard.js';
 import { useWeb3React } from '@web3-react/core';
+import { useGetContract } from '../../context/contract.context';
 
 const candidateViews = ['Moderate', 'Conservative', 'Capitalism', 'Social Liberalism', 'Separatism', 'Fascism'];
 
-const CandidateRegister = () => {
-	const [email, setEmail] = useState('');
+const CandidatsRegister = () => {
 	const firstNameRef = useRef(null);
 	const lastNameRef = useRef(null);
-	const stateeRef = useRef(null);
+	const personalIdRef = useRef(null);
 	const politicalViewRef = useRef(null);
 
-	const { account, library } = useWeb3React();
+	const contract = useGetContract();
 
 	const [loading, setLoading] = useState('');
 	const { setOpenModal } = useModalContext();
 	const handleSubmit = async (event) => {
+		setLoading(true);
 		event.preventDefault();
+		console.log(personalIdRef.current.value);
+		console.log(firstNameRef.current.value);
+		console.log(lastNameRef.current.value);
 		console.log(politicalViewRef.current.value);
-		if (!firstNameRef.current.value || !lastNameRef.current.value || !stateeRef.current.value) {
+		if (!firstNameRef.current.value || !lastNameRef.current.value || !personalIdRef.current.value || !politicalViewRef.current.value) {
 			setOpenModal('Please fill the form currectly');
 			return;
 		}
 
 		try {
-			const message = `Logging in at ${new Date().toISOString()}`;
-			const signature = await library.getSigner(account).signMessage(message);
-			console.log({ message, account, signature });
+			console.log(contract);
+			const result = await contract.createCandidate(firstNameRef.current.value, lastNameRef.current.value, politicalViewRef.current.value);
+			console.log('RESULT:', result);
 		} catch (error) {
 			console.log('ERROR:', error);
 		}
+		setLoading(false);
 		firstNameRef.current.value = null;
 	};
 
@@ -59,9 +61,9 @@ const CandidateRegister = () => {
 				<div className='flex flex-wrap -mx-3 mb-6'>
 					<div className='w-full md:w-1/2 px-3 mb-6 md:mb-0'>
 						<label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' for='grid-city'>
-							State
+							Personal Id
 						</label>
-						<input ref={stateeRef} className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500' id='grid-city' type='text' placeholder='New York' />
+						<input ref={personalIdRef} className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500' id='grid-city' type='number' placeholder='312121313' />
 					</div>
 					<div className='w-full md:w-1/2 px-3 mb-6 md:mb-0'>
 						<label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' for='grid-state'>
@@ -89,4 +91,4 @@ const CandidateRegister = () => {
 	);
 };
 
-export default CandidateRegister;
+export default CandidatsRegister;

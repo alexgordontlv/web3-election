@@ -4,19 +4,22 @@ import './assets/main.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './context/user.context';
+import { ContractProvider } from './context/contract.context';
 import { ModalProvider } from './context/modal.context';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 
 ReactDOM.render(
 	<React.StrictMode>
-		<UserProvider>
-			<ModalProvider>
-				<Web3ReactProvider getLibrary={(provider) => new Web3Provider(provider)}>
-					<App />
-				</Web3ReactProvider>
-			</ModalProvider>
-		</UserProvider>
+		<ContractProvider>
+			<UserProvider>
+				<ModalProvider>
+					<Web3ReactProvider getLibrary={(provider) => new Web3Provider(provider)}>
+						<App />
+					</Web3ReactProvider>
+				</ModalProvider>
+			</UserProvider>
+		</ContractProvider>
 	</React.StrictMode>,
 	document.getElementById('root')
 );

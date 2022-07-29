@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react';
 import { PieChart, Pie, Sector } from 'recharts';
 
 const data = [
-	{ name: '.com', value: 600 },
-	{ name: '.io', value: 250 },
-	{ name: '.net', value: 250 },
-	{ name: '.co.il', value: 200 },
+	{ name: 'Alex Gordon ', value: 5 },
+	{ name: '.io', value: 5 },
+	{ name: '.net', value: 5 },
+	{ name: '.co.il', value: 5 },
 ];
 
 const renderActiveShape = (props) => {
@@ -27,31 +27,18 @@ const renderActiveShape = (props) => {
 				{payload.name}
 			</text>
 			<Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} fill={fill} />
-			<Sector
-				cx={cx}
-				cy={cy}
-				startAngle={startAngle}
-				endAngle={endAngle}
-				innerRadius={outerRadius + 6}
-				outerRadius={outerRadius + 10}
-				fill={fill}
-			/>
+			<Sector cx={cx} cy={cy} startAngle={startAngle} endAngle={endAngle} innerRadius={outerRadius + 6} outerRadius={outerRadius + 10} fill={fill} />
 			<path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill='none' />
 			<circle cx={ex} cy={ey} r={3} fill={fill} stroke='none' />
-			<text
-				x={ex + (cos >= 0 ? 1 : -1) * 12}
-				y={ey}
-				dy={6}
-				textAnchor={textAnchor}
-				fill='#333'
-				className=' font-extrabold tracking-tight text-gray-900'>
+			<text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={6} textAnchor={textAnchor} fill='#333' className=' font-extrabold tracking-tight text-gray-900'>
 				{`${(percent * 100).toFixed(2)}%`}
 			</text>
 		</g>
 	);
 };
 
-export default function Example() {
+export default function Example({ candidates }) {
+	console.log(candidates);
 	const [activeIndex, setActiveIndex] = useState(0);
 	const onPieEnter = useCallback(
 		(_, index) => {
@@ -59,29 +46,10 @@ export default function Example() {
 		},
 		[setActiveIndex]
 	);
-
 	return (
-		<div className='flex flex-col items-center justify-center mt-10'>
-			<h2 className='flex items-center justify-center  text-2xl font-extrabold tracking-tight text-gray-900 sm:text-4xl'>
-				<span style={{ color: '#15bbca' }} className='w-full'>
-					Domain{' '}
-				</span>
-				<p style={{ color: 'black' }}> Distribution</p>
-			</h2>
-
+		<div>
 			<PieChart width={400} height={400}>
-				<Pie
-					activeIndex={activeIndex}
-					activeShape={renderActiveShape}
-					data={data}
-					cx={200}
-					cy={200}
-					innerRadius={60}
-					outerRadius={80}
-					fill='#3f3d56'
-					dataKey='value'
-					onMouseEnter={onPieEnter}
-				/>
+				<Pie activeIndex={activeIndex} activeShape={renderActiveShape} data={candidates} cx={200} cy={200} innerRadius={60} outerRadius={80} fill='#3f3d56' dataKey='value' onMouseEnter={onPieEnter} />
 			</PieChart>
 		</div>
 	);

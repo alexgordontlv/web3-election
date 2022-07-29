@@ -5,9 +5,13 @@ import { Link, useHistory } from 'react-router-dom';
 import { useUserContext } from '../../context/user.context';
 import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
+import { useContractContext } from '../../context/contract.context';
+import Elections from '../../contracts/Elections.json';
+import { Contract } from '@ethersproject/contracts';
 
 const navigation = [
-	{ name: 'Report', href: '/report', current: false },
+	{ name: 'Voters', href: '/voters', current: false },
+	{ name: 'Candidates', href: '/candidates', current: false },
 	{ name: 'Election', href: '/election', current: false },
 	{ name: 'Register Candidate', href: '/register-cantidate', current: false },
 	{ name: 'Register Voter', href: '/register-voter', current: false },
@@ -21,6 +25,8 @@ export default function Header() {
 	const { active, account, activate, chainId, library, deactivate } = useWeb3React();
 	console.log('NETWORK:', chainId);
 	const history = useHistory();
+	const contractContext = useContractContext();
+
 	const [location, setLocation] = useState('');
 	const {
 		state: { currentUser, isAdmin },
@@ -28,8 +34,6 @@ export default function Header() {
 	} = useUserContext();
 	let filteredNavigation = navigation.filter((nav) => {
 		if (nav.name !== 'Register Voter' && nav.name !== 'Register Candidate') return nav;
-		if (nav.name === 'Register Voter' && currentUser && isAdmin) return nav;
-		if (nav.name === 'Register Candidate' && currentUser && isAdmin) return nav;
 	});
 	console.log(isAdmin, currentUser);
 	useEffect(() => {
@@ -38,9 +42,12 @@ export default function Header() {
 		});
 	}, [history]);
 
-	useEffect(() => {
+	useEffect(async () => {
 		if (account) {
 			setCurrentUser({ currentUser: account, isAdmin: account === '0x588f21831dabb99C4f3E2DFe5C720B9d4c566b69' || account === '0x35197E0Dcb276f0AC5A2146F0718AF8671eDE9Ef' ? true : false });
+			const signer = await library.getSigner(account);
+			const ballotContract = new Contract('0x22A63f6F8eDaE336373fAbbA83fe09F78085A18A', Elections.abi, signer);
+			contractContext.setContract(ballotContract);
 			//			localStorage.setItem('currentUser', JSON.stringify(account));
 		} else {
 			setCurrentUser(null);
@@ -111,6 +118,27 @@ export default function Header() {
 																	</Link>
 																)}
 															</Menu.Item>
+															{isAdmin ? (
+																<>
+																	<Menu.Item>
+																		{({ active }) => (
+																			<Link to='/register-cantidate' className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+																				<div> Register Candidate</div>
+																			</Link>
+																		)}
+																	</Menu.Item>
+																	<Menu.Item>
+																		{({ active }) => (
+																			<Link to='/register-voter' className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+																				<div> Register Voter</div>
+																			</Link>
+																		)}
+																	</Menu.Item>
+																</>
+															) : (
+																<div></div>
+															)}
+
 															<Menu.Item>
 																{({ active }) => (
 																	<Link to='/' onClick={handleLogOut} className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>

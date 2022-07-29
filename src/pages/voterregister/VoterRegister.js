@@ -4,8 +4,7 @@ import { useModalContext } from '../../context/modal.context';
 import WrapperCard from '../../components/wrappercard/WrapperCard.js';
 import { useWeb3React } from '@web3-react/core';
 import { formatEther } from '@ethersproject/units';
-import { Contract } from '@ethersproject/contracts';
-import Voters from '../../contracts/Voters.json';
+import { useGetContract } from '../../context/contract.context';
 
 // The ERC-20 Contract ABI, which is a common contract interface
 // for tokens (this is the Human-Readable ABI format)
@@ -24,11 +23,10 @@ function useBalance() {
 }
 const VoterRegister = () => {
 	const voterAddressRef = useRef(null);
+	const contract = useGetContract();
 
 	const [loading, setLoading] = useState(false);
 	const { setOpenModal } = useModalContext();
-	const { account, library, chainId } = useWeb3React();
-	const balance = useBalance();
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -39,15 +37,8 @@ const VoterRegister = () => {
 
 		setLoading(true);
 		try {
-			const message = `Logging in at ${new Date().toISOString()}`;
-			const signer = await library.getSigner(account);
-			console.log('ABI', Voters.abi);
-			const daiContract = new Contract('0x5DBf4A823bd1A995b30Be90b90Cbb84fdcB54beb', Voters.abi, signer);
-			const isDeployed = await daiContract.deployed();
-			console.log('IS DEPLOYED', isDeployed);
-
-			const result = await daiContract.mint(voterAddressRef.current.value);
-			console.log('RESULT:', result);
+			const addVoter = await contract.addVoter(voterAddressRef.current.value);
+			console.log('RESULT VOTER:', addVoter);
 		} catch (error) {
 			console.log('ERROR:', error);
 		}

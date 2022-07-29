@@ -1,32 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { useGetCurrentUser } from '../../context/user.context';
-import moment from 'moment';
+import { useGetContract } from '../../context/contract.context';
 import Spinner from '../../components/spinner/Spinner';
-import { Contract } from '@ethersproject/contracts';
-import { useWeb3React } from '@web3-react/core';
-import Voters from '../../contracts/Voters.json';
 
 const VotersReport = () => {
-	const { account, library } = useWeb3React();
-
 	const [loading, setLoading] = useState(false);
 	const [voters, setVoters] = useState([]);
-
-	const currentUser = useGetCurrentUser();
-
+	const contract = useGetContract();
 	const getVoters = async () => {
 		try {
 			setLoading(true);
-			const signer = await library.getSigner(account);
+			const isDeployed = await contract.deployed();
+			console.log('TISDEPLUED:', isDeployed);
 
-			const daiContract = new Contract('0x5DBf4A823bd1A995b30Be90b90Cbb84fdcB54beb', Voters.abi, signer);
-			const isDeployed = await daiContract.deployed();
 			if (isDeployed) {
 				let tempVoters = [];
-				let totalSupply = await daiContract.totalSupply();
-				for (let index = 0; index < totalSupply; index++) {
-					const voter = await daiContract.ownerOf(index);
-					tempVoters.push(voter);
+				let totalSupplyBallot = await contract.getVoters();
+				const candedatesCount = await contract.candidateCount();
+				console.log('COUNT:', candedatesCount.toNumber());
+				for (let index = 0; index < candedatesCount; index++) {
+					const candidate = await contract.getCandidateByCount(index);
+					console.log('CANDIDATES:', candidate);
+				}
+				for (let index = 0; index < totalSupplyBallot; index++) {
+					const voterBallot = await contract.getOwnerOf(index);
+					tempVoters.push(voterBallot);
 				}
 				setVoters(tempVoters);
 			}

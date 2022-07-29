@@ -1,7 +1,12 @@
 pragma solidity ^0.8.7;
 
+import "./Voters.sol";
+
 contract Elections {
     //This will be stored eventually in a public mapping, so one can verify if one voted or not, but not know who is that one.
+
+    Voters private _votersContract;
+
     struct voter {
         uint256 voterNumber;
         bool voted;
@@ -9,7 +14,6 @@ contract Elections {
 
     struct Candidate {
         uint256 candidateCount;
-        uint256 id;
         string firstName;
         string lastName;
         uint256 voteCount;
@@ -35,6 +39,7 @@ contract Elections {
         ballotOfficialAddress = msg.sender; //Sets the wallet address of the contract's creator as "admin".
         ballotOfficialName = "Israel Elections 2022"; //ballotOfficialName - '' for example
         state = State.Created;
+        _votersContract = new Voters();
     }
 
     modifier condition(bool _condition) {
@@ -60,31 +65,28 @@ contract Elections {
     //Creates a candidate for the elections. Call addCandidate to add it to the mapping.
     //(id, firstName, lastName, politicalView)
     function createCandidate(
-        uint256 _id,
         string memory _firstName,
         string memory _lastName,
         string memory _politicalView
     ) public inState(State.Created) onlyOfficial {
-        addCandidate(_id, _firstName, _lastName, _politicalView);
+        addCandidate(_firstName, _lastName, _politicalView);
     }
 
     //Adds a candidate to the elections.
     //(CandidateCount, id, firstName, lastName, voteCount, politicalView)
     function addCandidate(
-        uint256 _id,
         string memory _firstName,
         string memory _lastName,
         string memory _politicalView
     ) private {
-        candidateCount++;
         candidates[candidateCount] = Candidate(
             candidateCount,
-            _id,
             _firstName,
             _lastName,
             0,
             _politicalView
         );
+        candidateCount++;
     }
 
     //Returns candidate struct by its candidateCount value
@@ -133,10 +135,23 @@ contract Elections {
         return voterRegister[_voterAddress].voterNumber;
     }
 
+    function getVoters() public view returns (uint256 supplyCount) {
+        return _votersContract.totalSupply();
+    }
+
+    function getOwnerOf(uint256 _id)
+        public
+        view
+        returns (address ownerAddress)
+    {
+        return _votersContract.ownerOf(_id);
+    }
+
     //add voter
     function addVoter(
         address _voterAddress /*, string memory _voterName*/
     ) public inState(State.Created) onlyOfficial {
+        _votersContract.mint(_voterAddress);
         voter memory v;
         totalVoter++;
         v.voted = false;
