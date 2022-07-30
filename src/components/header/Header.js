@@ -46,7 +46,7 @@ export default function Header() {
 		if (account) {
 			setCurrentUser({ currentUser: account, isAdmin: account === '0x35197E0Dcb276f0AC5A2146F0718AF8671eDE9Ef' ? true : false });
 			const signer = await library.getSigner(account);
-			const ballotContract = new Contract('0xCAe1f395bcD593CF3E8cFa45E60F990eA85FFfC9', Elections.abi, signer);
+			const ballotContract = new Contract('0xfb6eA946293935519bA303db3021B72B121a5c78', Elections.abi, signer);
 			contractContext.setContract(ballotContract);
 			const result2 = await ballotContract.getBalanceOf(account);
 			console.log('BALANMCE', result2.toNumber());

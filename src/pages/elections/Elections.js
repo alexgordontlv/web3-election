@@ -25,8 +25,9 @@ const Elections = () => {
 			if (isDeployed) {
 				let tempCandidats = [];
 				const candedatesCount = await contract.candidateCount();
+				const totalSupply = await contract.getVoters();
 
-				const haveEveryOneVoted = await contract.getIsAllVotersCounted();
+				const haveEveryOneVoted = (await contract.getIsAllVotersCounted()) && totalSupply.toNumber() > 0;
 
 				setAllVotersVoted(haveEveryOneVoted);
 				let mostVotes = 0;
