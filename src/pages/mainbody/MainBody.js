@@ -1,8 +1,8 @@
 import React from 'react';
 const MainBody = () => {
 	return (
-		<div className='flex  justify-center'>
-			<div className='grid grid-cols-1 max-w-5xl md:grid-cols-4 gap-2 '>Welcome to the cost living tracker</div>
+		<div className='flex  text-center  justify-center'>
+			<div className='text-2xl'>Welcome to the state elections</div>
 		</div>
 	);
 };

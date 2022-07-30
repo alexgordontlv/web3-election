@@ -15,15 +15,11 @@ const VotersReport = () => {
 			if (isDeployed) {
 				let tempVoters = [];
 				let totalSupplyBallot = await contract.getVoters();
-				const candedatesCount = await contract.candidateCount();
-				console.log('COUNT:', candedatesCount.toNumber());
-				for (let index = 0; index < candedatesCount; index++) {
-					const candidate = await contract.getCandidateByCount(index);
-					console.log('CANDIDATES:', candidate);
-				}
+
 				for (let index = 0; index < totalSupplyBallot; index++) {
-					const voterBallot = await contract.getOwnerOf(index);
-					tempVoters.push(voterBallot);
+					const voterAddress = await contract.getOwnerOf(index);
+					const voterResult = await contract.getVoterStructByAddress(voterAddress);
+					tempVoters.push({ address: voterAddress, voted: voterResult.voted });
 				}
 				setVoters(tempVoters);
 			}
@@ -58,10 +54,10 @@ const VotersReport = () => {
 									voters.map((voter, idx) => (
 										<tr key={idx}>
 											<td className='px-6 py-4 whitespace-nowrap'>
-												<div className='text-sm text-gray-900'>{voter}</div>
+												<div className='text-sm text-gray-900'>{voter.address}</div>
 											</td>
 											<td className='px-6 py-4 whitespace-nowrap'>
-												<div className='text-sm text-gray-900'>FALSE</div>
+												<div className='text-sm text-gray-900'>{voter.voted ? 'TRUE' : 'FALSE'}</div>
 											</td>
 										</tr>
 									))}

@@ -12,7 +12,7 @@ import { Contract } from '@ethersproject/contracts';
 const navigation = [
 	{ name: 'Voters', href: '/voters', current: false },
 	{ name: 'Candidates', href: '/candidates', current: false },
-	{ name: 'Election', href: '/election', current: false },
+	{ name: 'Elections', href: '/elections', current: false },
 	{ name: 'Register Candidate', href: '/register-cantidate', current: false },
 	{ name: 'Register Voter', href: '/register-voter', current: false },
 ];
@@ -44,9 +44,9 @@ export default function Header() {
 
 	useEffect(async () => {
 		if (account) {
-			setCurrentUser({ currentUser: account, isAdmin: account === '0x588f21831dabb99C4f3E2DFe5C720B9d4c566b69' || account === '0x35197E0Dcb276f0AC5A2146F0718AF8671eDE9Ef' ? true : false });
+			setCurrentUser({ currentUser: account, isAdmin: account === '0x35197E0Dcb276f0AC5A2146F0718AF8671eDE9Ef' ? true : false });
 			const signer = await library.getSigner(account);
-			const ballotContract = new Contract('0x22A63f6F8eDaE336373fAbbA83fe09F78085A18A', Elections.abi, signer);
+			const ballotContract = new Contract('0x62df635cbBf019B649a1DAc87BE0d814D77e4251', Elections.abi, signer);
 			contractContext.setContract(ballotContract);
 			//			localStorage.setItem('currentUser', JSON.stringify(account));
 		} else {
@@ -120,6 +120,13 @@ export default function Header() {
 															</Menu.Item>
 															{isAdmin ? (
 																<>
+																	<Menu.Item>
+																		{({ active }) => (
+																			<Link to='/date-picker' className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+																				<div> Set Elections Date</div>
+																			</Link>
+																		)}
+																	</Menu.Item>
 																	<Menu.Item>
 																		{({ active }) => (
 																			<Link to='/register-cantidate' className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>

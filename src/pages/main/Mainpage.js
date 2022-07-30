@@ -14,6 +14,8 @@ const UserCard = React.lazy(() => import('../../components/usercard/UserCard'));
 
 const VotersReport = React.lazy(() => import('../votersreport/VotersReport'));
 const CandidatsReport = React.lazy(() => import('../candidatsreport/CandidatsReport'));
+const DatePicker = React.lazy(() => import('../datepicker/DatePicker'));
+const Elections = React.lazy(() => import('../elections/Elections'));
 const queryClient = new QueryClient();
 
 const Mainpage = () => {
@@ -28,7 +30,9 @@ const Mainpage = () => {
 						<Route exact path='/' component={MainBody} />
 						<Route path='/login' render={(props) => (!currentUser ? <Login /> : <Redirect to='/' />)} />
 						<PrivateRoute path='/register-cantidate' component={CandidatsRegister} admin />
+						<PrivateRoute path='/date-picker' component={DatePicker} admin />
 						<PrivateRoute path='/register-voter' component={VoterRegister} admin />
+						<PrivateRoute path='/elections' component={Elections} />
 						<PrivateRoute path='/voters' component={VotersReport} />
 						<PrivateRoute path='/candidates' component={CandidatsReport} />
 						<PrivateRoute path='/profile' component={UserCard} />

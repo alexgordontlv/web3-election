@@ -22,6 +22,7 @@
     "@web3-react/injected-connector": "^6.0.7",
     "axios": "^0.21.1",
     "ethers": "^5.6.9",
+    "flowbite-datepicker": "^1.2.2",
     "moment": "^2.29.1",
     "postcss": "^8.2.10",
     "react": "^17.0.1",

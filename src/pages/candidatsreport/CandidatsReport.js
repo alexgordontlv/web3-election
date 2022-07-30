@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGetContract } from '../../context/contract.context';
 import Spinner from '../../components/spinner/Spinner';
-import { useWeb3React } from '@web3-react/core';
 import Example from '../../components/piechart/PieChart';
 const CandidateReport = () => {
-	const { account, library } = useWeb3React();
-
 	const [loading, setLoading] = useState(false);
 	const [candidates, setCandidates] = useState([]);
 

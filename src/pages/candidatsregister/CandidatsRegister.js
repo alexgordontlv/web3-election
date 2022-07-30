@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useModalContext } from '../../context/modal.context';
 import WrapperCard from '../../components/wrappercard/WrapperCard.js';
-import { useWeb3React } from '@web3-react/core';
 import { useGetContract } from '../../context/contract.context';
 
 const candidateViews = ['Moderate', 'Conservative', 'Capitalism', 'Social Liberalism', 'Separatism', 'Fascism'];
@@ -19,10 +18,6 @@ const CandidatsRegister = () => {
 	const handleSubmit = async (event) => {
 		setLoading(true);
 		event.preventDefault();
-		console.log(personalIdRef.current.value);
-		console.log(firstNameRef.current.value);
-		console.log(lastNameRef.current.value);
-		console.log(politicalViewRef.current.value);
 		if (!firstNameRef.current.value || !lastNameRef.current.value || !personalIdRef.current.value || !politicalViewRef.current.value) {
 			setOpenModal('Please fill the form currectly');
 			return;
