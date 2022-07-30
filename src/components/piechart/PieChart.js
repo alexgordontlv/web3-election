@@ -38,7 +38,6 @@ const renderActiveShape = (props) => {
 };
 
 export default function Example({ candidates }) {
-	console.log(candidates);
 	const [activeIndex, setActiveIndex] = useState(0);
 	const onPieEnter = useCallback(
 		(_, index) => {

@@ -15,7 +15,6 @@ const CandidateReport = () => {
 
 			if (isDeployed) {
 				let tempCandidats = [];
-				let tempCandidatsValues = [];
 				const candedatesCount = await contract.candidateCount();
 
 				for (let index = 0; index < candedatesCount; index++) {
