@@ -3,7 +3,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 // This contract is used to award the voters in our election with our precious VTN.
 
-contract votingToken is ERC20 {
+contract VotingToken is ERC20 {
     address public admin;
 
     constructor() ERC20("Voting Token", "VTN") {
@@ -18,5 +18,9 @@ contract votingToken is ERC20 {
 
     function burn(uint256 amount) external {
         _burn(msg.sender, amount);
+    }
+
+    function transferTokens(address _to, uint256 _amount) public {
+        _transfer(admin, _to, _amount);
     }
 }

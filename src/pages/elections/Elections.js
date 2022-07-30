@@ -9,8 +9,10 @@ const Elections = () => {
 	const [canVote, setCanVote] = useState(false);
 	const [votingStartTime, setVotingStartTime] = useState(false);
 	const [votingEndTime, setVotingEndime] = useState(false);
+	const [allVotersVoted, setAllVotersVoted] = useState(false);
 	const [currentDate, setCurrentDate] = useState(new Date());
 	const [candidates, setCandidates] = useState([]);
+	const [winner, setWinner] = useState(null);
 
 	const currentUser = useGetCurrentUser();
 	const contract = useGetContract();
@@ -23,14 +25,25 @@ const Elections = () => {
 				let tempCandidats = [];
 				const candedatesCount = await contract.candidateCount();
 
+				const haveEveryOneVoted = await contract.getIsAllVotersCounted();
+
+				setAllVotersVoted(haveEveryOneVoted);
+				let mostVotes = 0;
+				let winnerCandidate = null;
 				for (let index = 0; index < candedatesCount; index++) {
 					const candidate = await contract.getCandidateByCount(index);
+					console.log(candidate.voteCount.toNumber());
+					if (candidate.voteCount.toNumber() > mostVotes) {
+						mostVotes = candidate.voteCount.toNumber();
+						winnerCandidate = candidate;
+					}
 					tempCandidats.push(candidate);
 				}
+				console.log('WINNER', winnerCandidate);
+				setWinner(winnerCandidate);
 				setCandidates(tempCandidats);
 			}
 			const voterResult = await contract.getVoterStructByAddress(currentUser);
-			console.log(voterResult);
 			if (voterResult && voterResult.exists && !voterResult.voted) {
 				setCanVote(true);
 			}
@@ -53,15 +66,14 @@ const Elections = () => {
 		}
 	};
 
-	const handleVote = async (candidateId) => {
-		console.log(candidateId);
-		console.log(currentDate.getTime());
-		console.log(currentUser);
+	const getTotalVotersStatus = async () => {};
 
+	const handleVote = async (candidateId) => {
 		setLoading(true);
 		try {
 			const votingResult = await contract.voteNow(parseInt(candidateId), parseInt(currentDate.getTime()));
 			console.log(votingResult);
+			setCanVote(false);
 		} catch (error) {
 			console.log('ERROR', error);
 		}
@@ -80,10 +92,12 @@ const Elections = () => {
 				<div className='text-2xl'>The voting time is not now, we will start at: {votingStartTime.toString()}</div>
 			</div>
 		);
-	if (votingEndTime && currentDate > votingEndTime)
+	if (votingEndTime && (currentDate > votingEndTime || allVotersVoted))
 		return (
-			<div className='flex  text-center  justify-center'>
-				<div className='text-2xl'>The voting ended at: {votingEndTime.toString()}</div>
+			<div className='flex  text-center  justify-center  flex-wrap '>
+				{currentDate > votingEndTime && <div className='text-2xl'>The voting ended at: {votingEndTime.toString()}</div>}
+
+				<div className='text-2xl'>WINNER: {winner && winner.firstName + ' ' + winner.lastName}</div>
 			</div>
 		);
 	return (

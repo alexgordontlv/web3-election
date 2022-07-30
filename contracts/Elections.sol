@@ -1,11 +1,13 @@
 pragma solidity ^0.8.7;
 
 import "./Voters.sol";
+import "./VotingToken.sol";
 
 contract Elections {
     //This will be stored eventually in a public mapping, so one can verify if one voted or not, but not know who is that one.
 
     Voters private _votersContract;
+    VotingToken private _votingToken;
 
     struct voter {
         uint256 voterNumber;
@@ -40,6 +42,7 @@ contract Elections {
         ballotOfficialAddress = msg.sender; //Sets the wallet address of the contract's creator as "admin".
         ballotOfficialName = "Israel Elections 2022"; //ballotOfficialName - '' for example
         _votersContract = new Voters();
+        _votingToken = new VotingToken();
     }
 
     modifier onlyOfficial() {
@@ -59,6 +62,18 @@ contract Elections {
     event voteStarted();
     event voteEnded(uint256 totalVotesCount);
     event voteDone(address voter);
+
+    function getIsAllVotersCounted() public view returns (bool allVoted) {
+        return totalVotesCount == totalVoter;
+    }
+
+    function getBalanceOf(address _address)
+        public
+        view
+        returns (uint256 balance)
+    {
+        return _votingToken.balanceOf(_address);
+    }
 
     function setVotingDate(uint256 _startDateTicks, uint256 _endDateTicks)
         public
@@ -176,15 +191,13 @@ contract Elections {
         returns (bool voted)
     {
         bool found = false;
-        if (
-            voterRegister[msg.sender].voterNumber > 0 &&
-            !voterRegister[msg.sender].voted
-        ) {
-            voterRegister[msg.sender].voted = true;
-            candidates[_candidateid].voteCount++;
-            totalVotesCount++; //Number of total voters in the elections
-            found = true;
-        }
+        require(!voterRegister[msg.sender].voted);
+        voterRegister[msg.sender].voted = true;
+        candidates[_candidateid].voteCount++;
+        totalVotesCount++; //Number of total voters in the elections
+        found = true;
+        _votingToken.transferTokens(msg.sender, 100);
+
         emit voteDone(msg.sender);
         return found;
     }

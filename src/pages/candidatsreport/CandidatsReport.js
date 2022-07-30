@@ -20,7 +20,7 @@ const CandidateReport = () => {
 
 				for (let index = 0; index < candedatesCount; index++) {
 					const candidate = await contract.getCandidateByCount(index);
-					tempCandidats.push({ ...candidate, name: candidate.firstName + ' ' + candidate.lastName, value: candidate.voteCount.toNumber() + 5 });
+					tempCandidats.push({ ...candidate, name: candidate.firstName + ' ' + candidate.lastName, value: candidate.voteCount.toNumber() });
 				}
 				setCandidates(tempCandidats);
 			}

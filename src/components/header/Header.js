@@ -5,7 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useUserContext } from '../../context/user.context';
 import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
-import { useContractContext } from '../../context/contract.context';
+import { useContractContext, useGetContract } from '../../context/contract.context';
 import Elections from '../../contracts/Elections.json';
 import { Contract } from '@ethersproject/contracts';
 
@@ -28,6 +28,7 @@ export default function Header() {
 	const contractContext = useContractContext();
 
 	const [location, setLocation] = useState('');
+	const [vtnBalance, setVtnBalance] = useState(null);
 	const {
 		state: { currentUser, isAdmin },
 		setCurrentUser,
@@ -46,11 +47,15 @@ export default function Header() {
 		if (account) {
 			setCurrentUser({ currentUser: account, isAdmin: account === '0x35197E0Dcb276f0AC5A2146F0718AF8671eDE9Ef' ? true : false });
 			const signer = await library.getSigner(account);
-			const ballotContract = new Contract('0x62df635cbBf019B649a1DAc87BE0d814D77e4251', Elections.abi, signer);
+			const ballotContract = new Contract('0xC9Af7914B9aA0928a18283397f1Fa77342750158', Elections.abi, signer);
 			contractContext.setContract(ballotContract);
+			const result2 = await ballotContract.getBalanceOf(account);
+			console.log('BALANMCE', result2.toNumber());
+			setVtnBalance(result2.toNumber());
 			//			localStorage.setItem('currentUser', JSON.stringify(account));
 		} else {
 			setCurrentUser(null);
+			setVtnBalance(null);
 		}
 	}, [account]);
 
@@ -81,7 +86,7 @@ export default function Header() {
 							<div className='flex-1 flex items-center justify-center md:justify-between sm:items-stretch '>
 								<Link to='/'>
 									<div className='flex items-center justify-start mr-10 md:mr-0'>
-										<p className='text-xl font-light sm:text-2xl'>STATE ELECTIONS</p>
+										<p className='text-xl font-light sm:text-2xl'>{vtnBalance && 'Current VTN Balance: ' + vtnBalance}</p>
 									</div>
 								</Link>
 								<div className='hidden sm:block sm:ml-6 items-center justify-center'>
