@@ -15,6 +15,7 @@ const Elections = () => {
 	const [winner, setWinner] = useState(null);
 
 	const currentUser = useGetCurrentUser();
+
 	const contract = useGetContract();
 
 	const getCandidates = async () => {
@@ -65,8 +66,6 @@ const Elections = () => {
 			console.error('ERROR', error);
 		}
 	};
-
-	const getTotalVotersStatus = async () => {};
 
 	const handleVote = async (candidateId) => {
 		setLoading(true);
